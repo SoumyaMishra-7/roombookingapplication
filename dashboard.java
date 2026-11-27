@@ -68,6 +68,25 @@ class Dashboard {
             cancel.setEnabled(table.getSelectedRow() >= 0));
         cancel.addActionListener(event -> cancelBooking(table.getSelectedRow()));
         JPanel actions = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
+        JButton check = new JButton("Check availability");
+        check.addActionListener(event -> {
+            try {
+                LocalDate day = LocalDate.parse(date.getText().strip());
+                String room = (String) rooms.getSelectedItem();
+                java.util.List<String> free = new java.util.ArrayList<>();
+                for (int index = 0; index < times.getItemCount(); index++) {
+                    String time = times.getItemAt(index);
+                    if (!bookings.containsKey(new Slot(room, day, time))) free.add(time);
+                }
+                String message = day.isBefore(LocalDate.now()) ? "Choose today or a future date."
+                    : free.isEmpty() ? "No slots available." : String.join("\n", free);
+                JOptionPane.showMessageDialog(frame, message, "Room availability",
+                    JOptionPane.INFORMATION_MESSAGE);
+            } catch (DateTimeParseException error) {
+                status.setText("Enter a valid date in YYYY-MM-DD format.");
+            }
+        });
+        actions.add(check);
         actions.add(cancel);
         actions.add(book);
         JPanel footer = new JPanel(new BorderLayout(0, 10));

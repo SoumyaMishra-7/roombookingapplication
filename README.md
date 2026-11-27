@@ -11,3 +11,5 @@ java dashboard.java
 ```
 
 Bookings are stored in memory and reset when the app closes. No database or external libraries are required.
+
+Shows the selected room's free slots when you click Check availability.
