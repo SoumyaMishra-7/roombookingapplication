@@ -58,7 +58,26 @@ class Dashboard {
         table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         table.setRowHeight(26);
         table.setFillsViewportHeight(true);
-        content.add(new JScrollPane(table), BorderLayout.CENTER);
+        var sorter = new javax.swing.table.TableRowSorter<>(rows);
+        table.setRowSorter(sorter);
+        JTextField search = new JTextField();
+        search.getDocument().addDocumentListener(new javax.swing.event.DocumentListener() {
+            private void filter() {
+                String query = search.getText().strip();
+                sorter.setRowFilter(query.isEmpty() ? null : RowFilter.regexFilter(
+                    "(?iu)" + java.util.regex.Pattern.quote(query)));
+            }
+            public void insertUpdate(javax.swing.event.DocumentEvent event) { filter(); }
+            public void removeUpdate(javax.swing.event.DocumentEvent event) { filter(); }
+            public void changedUpdate(javax.swing.event.DocumentEvent event) { filter(); }
+        });
+        JPanel results = new JPanel(new BorderLayout(8, 8));
+        JPanel searchBar = new JPanel(new BorderLayout(8, 0));
+        searchBar.add(label("Search bookings", search), BorderLayout.WEST);
+        searchBar.add(search, BorderLayout.CENTER);
+        results.add(searchBar, BorderLayout.NORTH);
+        results.add(new JScrollPane(table), BorderLayout.CENTER);
+        content.add(results, BorderLayout.CENTER);
 
         JButton book = new JButton("Book room");
         book.addActionListener(event -> bookRoom());
@@ -66,7 +85,10 @@ class Dashboard {
         cancel.setEnabled(false);
         table.getSelectionModel().addListSelectionListener(event ->
             cancel.setEnabled(table.getSelectedRow() >= 0));
-        cancel.addActionListener(event -> cancelBooking(table.getSelectedRow()));
+        cancel.addActionListener(event -> {
+            int selected = table.getSelectedRow();
+            if (selected >= 0) cancelBooking(table.convertRowIndexToModel(selected));
+        });
         JPanel actions = new JPanel(new FlowLayout(FlowLayout.RIGHT, 8, 0));
         actions.add(cancel);
         actions.add(book);

@@ -11,3 +11,5 @@ java dashboard.java
 ```
 
 Bookings are stored in memory and reset when the app closes. No database or external libraries are required.
+
+Search bookings by any table column or click a column heading to sort.
