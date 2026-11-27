@@ -126,7 +126,7 @@ class Dashboard {
         Slot slot = new Slot((String) rooms.getSelectedItem(), selectedDate,
             (String) times.getSelectedItem());
         if (bookings.putIfAbsent(slot, bookedBy) != null) {
-            status.setText("This room is already booked for that date and time.");
+            status.setText("That slot is taken.");
             return;
         }
         rows.addRow(new Object[]{slot.room(), slot.date(), slot.time(), bookedBy});
